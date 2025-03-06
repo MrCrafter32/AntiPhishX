@@ -2,6 +2,7 @@ import { Router } from "express";
 import { ImapFlow } from "imapflow";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import Imap from "../models/Imap.js";
 dotenv.config();
 
 const { MONGO_URI, IMAP_HOST, IMAP_PORT, IMAP_USER, IMAP_PASS } = process.env;
@@ -126,5 +127,21 @@ router.get("/fetchmailbody/:id", async (req, res) => {
     res.status(500).send("Error fetching email body");
   }
 });
+
+router.post("/saveDetails", async (req, res) => {
+  const { host, port, secure, user, pass } = req.body;
+  const username = req.session.username;
+  if (!host || !port || !secure || !user || !pass) {
+    return res.status(400).send("All fields are required");
+  }
+  try {
+    const imap = new Imap({ username, host, port, secure, auth: { user, pass } });
+    await imap.save();
+    res.status(201).send("IMAP details saved successfully");
+  } catch (error) {
+    console.error("Error saving IMAP details:", error);
+    res.status(500).send("Internal Server Error");
+  }
+})
 
 export default router;
