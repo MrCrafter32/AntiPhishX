@@ -1,10 +1,15 @@
 import { Router } from "express";
 import { ImapFlow } from "imapflow";
 import dotenv from "dotenv";
-
+import mongoose from "mongoose";
 dotenv.config();
 
+const URI = process.env.MONGO_URI;
+
+
 const router = Router();
+
+mongoose.connect(URI);
 
 const client = new ImapFlow({
   host: process.env.IMAP_HOST,
@@ -43,6 +48,7 @@ async function fetchInboxEmails() {
       const envelope = message.envelope.from[0];
       console.log(`New email from ${envelope.name} <${envelope.address}>`);
       emails.push({
+        id: `${message.uid}`,
         from: `${envelope.name} <${envelope.address}>`,
         subject: message.envelope.subject,
       });
@@ -69,6 +75,27 @@ router.get("/mail", async (req, res) => {
 router.get("/listmails", async (req, res) => {
   const mailboxes = await fetchInboxEmails();
   res.send(mailboxes);
+});
+
+router.get("/fetchmailbody/:id", async (req, res) => {
+  await client.connect();
+  let lock = await client.getMailboxLock('INBOX');
+  let emailBody = "";
+  try {
+    for await (let message of client.fetch(req.params.id, { envelope: true, source: true })) {
+      const envelope = message.envelope.from[0];
+      emailBody = {
+        from: `${envelope.name} <${envelope.address}>`,
+        subject: message.envelope.subject,
+        body: message.source.toString()
+      };
+      console.log(emailBody);
+    }
+  } finally {
+    lock.release();
+  }
+  await client.logout();
+  res.send(emailBody);
 });
 
 export default router;

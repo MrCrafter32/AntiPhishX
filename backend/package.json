@@ -12,7 +12,8 @@
   "dependencies": {
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "imapflow": "^1.0.182"
+    "imapflow": "^1.0.182",
+    "mongoose": "^8.12.1"
   },
   "type": "module"
 }
