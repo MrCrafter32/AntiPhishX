@@ -1,7 +1,7 @@
 // app/api/auth/signup/route.js
 
 import { hashPassword } from "@/lib/hash";
-import { prisma } from "@/lib/prisma";
+import prisma from "@/lib/prisma";
 
 export async function POST(req) {
   const { email, password } = await req.json();

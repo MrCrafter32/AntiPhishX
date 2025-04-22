@@ -19,21 +19,18 @@ export async function POST(req) {
     return new Response(JSON.stringify({ error: "Invalid password" }), { status: 401 });
   }
 
-  // Generate JWT token
   const token = jwt.sign(
     { id: user.id, email: user.email },
     JWT_SECRET,
-    { expiresIn: '1h' } // Token expires in 1 hour
+    { expiresIn: '1h' } 
   );
 
-  // Return the token along with user details
   const sessionData = {
     id: user.id,
     email: user.email,
     name: user.name || 'User',
-    image: user.image || null,
     token: token
   };
 
-  return new Response(JSON.stringify(sessionData), { status: 200 });
+  return new Response(sessionData, { status: 200 });
 }
