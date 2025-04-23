@@ -2,31 +2,31 @@ import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 
 export async function middleware(req) {
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  const token = await getToken({ req, secret: process.env.JWT_SECRET });
   const { pathname } = req.nextUrl;
 
-  const protectedRoutes = ["/dashboard", "/profile", "/setup"];
-  const isProtected = protectedRoutes.some((route) => pathname.startsWith(route));
+  // console.log('Token in middleware:', token);  // Debugging token data
 
-  // If the user is not authenticated and trying to access a protected route
-  if (!token && isProtected) {
+  // If no token exists, the user is not logged in
+  if (!token && pathname !== "/login" && pathname !== "/signup") {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  // If the user is authenticated and trying to access login/register page, redirect to dashboard
-  if (token && (pathname === "/login" || pathname === "/register")) {
+  // Check if the user is logging in for the first time and redirect to the setup page
+  if (token && token.isFirstLogin && pathname !== "/setup") {
+    console.log('User is first-time login, redirecting to setup page');
+    return NextResponse.redirect(new URL("/setup", req.url));
+  }
+
+  // Redirect users who are already logged in to the dashboard if they try to access login or signup
+  if (token && (pathname === "/login" || pathname === "/signup")) {
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
-  // If the user is logged out and trying to access a protected page, ensure they go to login
-  if (!token && (pathname === "/logout")) {
-    return NextResponse.redirect(new URL("/login", req.url));
-  }
-
+  // Allow all other routes to proceed as usual
   return NextResponse.next();
 }
 
-// Define routes where the middleware should apply
 export const config = {
-  matcher: ["/", "/login", "/register", "/dashboard/:path*", "/profile/:path*", "/setup/:path"],
+  matcher: ["/","/login", "/signup", "/dashboard", "/setup"],
 };

@@ -31,31 +31,23 @@ export const authOptions = {
     strategy: "jwt"
   },
   pages: {
-    signIn: "/auth/login",
+    signIn: "/auth/login", // Adjust to match your login route
     error: "/auth/login"
   },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.isFirstLogin = user.isFirstLogin; // Add this line
+        token.isFirstLogin = user.isFirstLogin;  // Attach isFirstLogin to token
       }
       return token;
     },
     async session({ session, token }) {
       session.user.id = token.id;
-  
-      if (token.isFirstLogin) {
-        session.isFirstLogin = true;
-  
-        await prisma.user.update({
-          where: { id: token.id },
-          data: { isFirstLogin: false },
-        });
-  
-        token.isFirstLogin = false;
-      }
-  
+      session.isFirstLogin = token.isFirstLogin;  // Attach isFirstLogin to session
+
+      // No need to update the user here as it's done in middleware now
+
       return session;
     }
   },

@@ -1,36 +1,61 @@
-import bcrypt from 'bcryptjs';
-import { prisma } from "@/lib/prisma";
-import jwt from 'jsonwebtoken';
+import NextAuth from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import prisma from "@/lib/prisma";
+import { compare } from "bcryptjs";
 
-const JWT_SECRET = process.env.JWT_SECRET;
+export const authOptions = {
+  adapter: PrismaAdapter(prisma),
+  providers: [
+    CredentialsProvider({
+      name: "credentials",
+      credentials: {
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "password" }
+      },
+      async authorize(credentials) {
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email }
+        });
 
-export async function POST(req) {
-  const { email, password } = await req.json();
+        if (!user) throw new Error("No user found");
 
-  const user = await prisma.user.findUnique({ where: { email } });
+        const isValid = await compare(credentials.password, user.password);
+        if (!isValid) throw new Error("Invalid password");
 
-  if (!user) {
-    return new Response(JSON.stringify({ error: "User not found" }), { status: 404 });
-  }
+        return user;
+      }
+    })
+  ],
+  session: {
+    strategy: "jwt"
+  },
+  pages: {
+    signIn: "/login",
+    error: "/login"
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.isFirstLogin = user.isFirstLogin; // Attach this to the token
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      session.user.id = token.id;
+      if (token.isFirstLogin) {
+        session.isFirstLogin = true;
+        await prisma.user.update({
+          where: { id: token.id },
+          data: { isFirstLogin: false },
+        });
+        token.isFirstLogin = false;
+      }
+      return session;
+    }
+  },
+  secret: process.env.NEXTAUTH_SECRET
+};
 
-  const isPasswordCorrect = await bcrypt.compare(password, user.password);
-
-  if (!isPasswordCorrect) {
-    return new Response(JSON.stringify({ error: "Invalid password" }), { status: 401 });
-  }
-
-  const token = jwt.sign(
-    { id: user.id, email: user.email },
-    JWT_SECRET,
-    { expiresIn: '1h' } 
-  );
-
-  const sessionData = {
-    id: user.id,
-    email: user.email,
-    name: user.name || 'User',
-    token: token
-  };
-
-  return new Response(sessionData, { status: 200 });
-}
+export default NextAuth(authOptions);

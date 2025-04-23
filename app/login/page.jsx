@@ -16,6 +16,7 @@ export default function LoginPage() {
       redirect: false,
       email,
       password,
+      
     });
 
     if (res.ok) {
