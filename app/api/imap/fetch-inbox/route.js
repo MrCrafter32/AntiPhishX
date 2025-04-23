@@ -1,9 +1,10 @@
     import { NextResponse } from "next/server";
     const { ImapFlow } = require('imapflow');
     import { ObjectId } from "mongodb";
+    const pino = require('pino');
 
     export async function GET(request) {
-        // console.log(request);
+        pino.level = 'silent';
         const authHeader = request.headers.get("authorization");
         if (!authHeader || !authHeader.startsWith("Bearer ")) {
             return NextResponse.json({ error: "Authorization token is required" }, { status: 401 });
@@ -30,7 +31,6 @@
                 error: "Integration details not found",
             }, { status: 404 });
         }
-        // console.log("Integration details:", integrationDetails);
         if (integrationDetails.type === "IMAP") {
             const client = new ImapFlow({
                 host: integrationDetails.imapHost,
@@ -39,8 +39,10 @@
                 auth: {
                     user: integrationDetails.imapEmail,
                     pass: integrationDetails.imapPassword
-                }
+                },
+                logger: pino
             });
+
             
             try {
                 await client.connect();
@@ -57,15 +59,20 @@
                 const messages = await client.fetch(`${totalMessages}:${start}`, { envelope: true });
                 
                 let mailList = [];
+                
                 for await (let msg of messages) {
                     mailList.unshift({ // Use unshift to push emails in reverse order
                         id: msg.uid.toString(),
                         subject: msg.envelope.subject,
                         from: msg.envelope.from[0].address,
                         date: msg.envelope.date,
+                        
                     });
+                    console.log(msg)
                 }
+
                 //log length of mailList
+                // console.log(mailList)
                 console.log("Mail list length:", mailList.length);
                 return NextResponse.json(mailList, { status: 200 });
             } catch (error) {
@@ -74,9 +81,5 @@
             } finally {
                 await client.logout();
             }
-        }
-        if (integrationDetails.type === "GMAIL") {
-            // Gmail OAUTH logi
-            
         }
     }

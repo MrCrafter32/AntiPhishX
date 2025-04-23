@@ -2,20 +2,21 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import Link from "next/link";
 import { ObjectId } from "mongodb";
+import { getUserId} from "@/lib/getUser";
 
 export default async function DashboardPage() {
     const session = await getServerSession(authOptions);
     console.log("Session:", session);
-    const userId = session?.user.id;
+    const userId = await getUserId();
 
 
     const response = await fetch(
-        `http://localhost:3000/api/fetch-mails?sessionId=${session?.user.id}`,
+        `http://mrcrafter.tech:3000/api/imap/fetch-inbox?sessionId=${userId}`,
         {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${session?.user.id}`,
+                'Authorization': `Bearer ${userId}`,
             },
         }
     );

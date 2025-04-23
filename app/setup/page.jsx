@@ -74,14 +74,6 @@ export default function SetupPage() {
         >
           IMAP
         </button>
-        <button
-          className={`px-4 py-2 text-sm rounded-md transition-all duration-300 ${
-            type === "GOOGLE" ? "bg-red-600 text-white" : "bg-gray-200 text-gray-800"
-          } hover:bg-red-700 hover:text-white`}
-          onClick={() => setType("GOOGLE")}
-        >
-          Google
-        </button>
       </div>
 
       {type === "IMAP" && (
@@ -139,20 +131,6 @@ export default function SetupPage() {
             Submit
           </button>
         </form>
-      )}
-
-      {type === "GOOGLE" && (
-        <div className="text-center">
-          <p className="mb-4 text-sm text-gray-700">
-            Connect your Google account to fetch emails.
-          </p>
-          <button
-            className="bg-red-600 text-white text-sm px-6 py-2 rounded-md font-medium hover:bg-red-700 transition-all duration-300 transform hover:scale-105"
-            onClick={() => window.location.href = "/setup/google"}
-          >
-            Connect Google
-          </button>
-        </div>
       )}
     </main>
   );
