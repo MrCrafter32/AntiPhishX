@@ -12,8 +12,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                echo "Cloning repository..."
-                branch: 'main',url: 'https://github.com/MrCrafter32/AntiPhishX.git'
+                echo "Repository already checked out by Jenkins."
             }
         }
 
