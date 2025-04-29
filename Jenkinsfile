@@ -19,15 +19,15 @@ pipeline {
         stage('Build Docker Images') {
             steps {
                 echo "Building Flask and Next.js containers..."
-                sh 'docker-compose build'
+                sh 'docker compose build'
             }
         }
 
         stage('Deploy Services') {
             steps {
                 echo "Restarting containers..."
-                sh 'docker-compose down'
-                sh 'docker-compose up -d'
+                sh 'docker compose down'
+                sh 'docker compose up -d'
             }
         }
 
