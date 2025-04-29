@@ -23,7 +23,7 @@ pipeline {
              steps {
                 withCredentials([string(credentialsId: 'antiphishenv', variable: 'ENV_CONTENT')]) {
                     sh """
-                    echo "$ENV_CONTENT" > antiphishx/.env
+                    echo "$ENV_CONTENT" > AntiPhishNextJS/.env
                     """
                 }
             }       
