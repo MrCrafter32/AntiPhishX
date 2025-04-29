@@ -21,7 +21,7 @@ pipeline {
 
         stage('Inject .env') {
              steps {
-                withCredentials([string(credentialsId: 'antiphishx-env', variable: 'ENV_CONTENT')]) {
+                withCredentials([string(credentialsId: '25999455-9a29-4c40-a00f-a538bdabc9c0', variable: 'ENV_CONTENT')]) {
                     sh """
                     echo "$ENV_CONTENT" > antiphishx/.env
                     """
