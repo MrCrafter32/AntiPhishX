@@ -1,9 +1,6 @@
 pipeline {
     agent any
 
-    environment{
-        ENV_FILE_PATH = '.env'
-    }
 
     triggers {
         githubPush()
@@ -11,6 +8,8 @@ pipeline {
 
     environment {
         COMPOSE_PROJECT_NAME = "antiphishx"
+        ENV_FILE_PATH = '.env'
+
     }
 
     stages {
