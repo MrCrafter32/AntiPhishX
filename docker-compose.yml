@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   antiphishnlp:
-    build: ./AntiPhishNLP
+    build: ./NLP
     ports:
       - "3000:3000"
     restart: always
