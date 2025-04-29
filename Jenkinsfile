@@ -13,7 +13,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo "Cloning repository..."
-                git branch: 'main','https://github.com/MrCrafter32/AntiPhishX.git'
+                branch: 'main',url: 'https://github.com/MrCrafter32/AntiPhishX.git'
             }
         }
 
