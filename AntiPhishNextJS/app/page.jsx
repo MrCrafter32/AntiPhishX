@@ -20,7 +20,7 @@ export default function DashboardPage() {
         const userId = session.user.id;
 
         const response = await fetch(
-          `http://mrcrafter.tech:3000/api/imap/fetch-inbox?sessionId=${userId}`,
+          `/api/imap/fetch-inbox?sessionId=${userId}`,
           {
               method: 'GET',
               headers: {

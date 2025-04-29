@@ -2,7 +2,7 @@ export async function POST(req) {
     try {
         const body = await req.json();
 
-        const response = await fetch("http://mrcrafter.tech/predict", {
+        const response = await fetch("http://mrcrafter.tech:3000/predict", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
