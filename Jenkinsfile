@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment{
+        ENV_FILE_PATH = '.env'
+    }
+
     triggers {
         githubPush()
     }
@@ -15,6 +19,16 @@ pipeline {
                 echo "Repository already checked out by Jenkins."
             }
         }
+
+        stage('Inject .env') {
+             steps {
+                withCredentials([string(credentialsId: 'antiphishx-env', variable: 'ENV_CONTENT')]) {
+                    sh """
+                    echo "$ENV_CONTENT" > antiphishx/.env
+                    """
+                }
+            }       
+        }   
 
         stage('Build Docker Images') {
             steps {
