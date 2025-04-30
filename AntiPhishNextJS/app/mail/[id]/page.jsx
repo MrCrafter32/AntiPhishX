@@ -119,19 +119,19 @@ export default function Mail({ params }) {
                     <Link href="/" className="mr-4 text-white hover:text-gray-300">
                         <Home className="w-6 h-6" />
                     </Link>
-                    <h1 className="text-2xl font-bold">Email Analysis</h1>
+                    <h1 className="text-2xl text-white font-bold">Email Analysis</h1>
                 </div>
 
                 <div className="flex-1 rounded-2xl p-6 backdrop-blur-md bg-white/5 shadow-md border border-white/10 overflow-auto">
                     {/* 🛠️ Now dynamic subject, from, and to */}
-                    <h2 className="text-lg font-bold mb-2">Subject: {subject}</h2>
+                    <h2 className="text-lg texy-gray-300 font-bold mb-2">Subject: {subject}</h2>
                     <p className="text-sm text-gray-300 mb-1">
                         <strong>From:</strong> {from}
                     </p>
                     <p className="text-sm text-gray-300 mb-4">
                         <strong>To:</strong> {to}
                     </p>
-                    <h3 className="text-md font-semibold mb-2">Body:</h3>
+                    <h3 className="text-md text-gray-300 font-semibold mb-2">Body:</h3>
                     <div className="text-sm text-gray-200" dangerouslySetInnerHTML={{ __html: String(htmlBody) }} />
                 </div>
             </div>
