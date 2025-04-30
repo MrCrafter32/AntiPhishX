@@ -34,8 +34,10 @@ pipeline {
             }
         }
         stage('Inject .env') {
+            steps {
              sh 'docker cp /root/capstone/AntiPhishX/AntiPhishNextJS/.env antiphishx_antiphishx_1:/app/.env'
              sh 'docker restart antiphishx_antiphishx_1'
+            }
         }   
 
         stage('Verify') {
