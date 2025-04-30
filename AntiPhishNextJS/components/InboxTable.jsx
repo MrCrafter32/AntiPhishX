@@ -6,7 +6,7 @@ export default function InboxTable({ mails }) {
   const router = useRouter();
 
   return (
-    <div className="bg-[#1a1a1a] h-full overflow-y-auto">
+    <div className="h-full overflow-y-auto">
       <table className="w-full table-auto text-white">
         <tbody>
           {mails.map((mail) => (
