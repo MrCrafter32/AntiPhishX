@@ -19,19 +19,9 @@ pipeline {
             }
         }
 
-        stage('Inject .env') {
-             steps {
-                script {
-          // Write the .env file into the workspace
-          writeFile(file: '.env', text: ENV_CONTENT)
-        }
-            }       
-        }   
-
         stage('Build Docker Images') {
             steps {
                 echo "Building Flask and Next.js containers..."
-                sh 'cp .env .'
                 sh 'docker-compose build'
             }
         }
@@ -43,6 +33,10 @@ pipeline {
                 sh 'docker-compose up -d'
             }
         }
+        stage('Inject .env') {
+             sh 'docker cp /root/capstone/AntiPhishX/AntiPhishNextJS/.env antiphishx_antiphishx_1:/app/.env'
+             sh 'docker restart antiphishx_antiphishx_1'
+        }   
 
         stage('Verify') {
             steps {
@@ -50,6 +44,7 @@ pipeline {
                 sh 'docker ps'
             }
         }
+
 
         stage('Done') {
             steps {
