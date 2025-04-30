@@ -8,7 +8,7 @@ pipeline {
 
     environment {
         COMPOSE_PROJECT_NAME = "antiphishx"
-        ENV_FILE_PATH = '.env'
+        ENV_CONTENT = credentials('antiphishenv')
 
     }
 
@@ -21,15 +21,17 @@ pipeline {
 
         stage('Inject .env') {
              steps {
-                withCredentials([file(credentialsId: 'antiphishenv', variable: 'ENV_FILE')]) {
-                    sh 'cp "$ENV_FILE" .env'
-                }
+                script {
+          // Write the .env file into the workspace
+          writeFile(file: '.env', text: ENV_CONTENT)
+        }
             }       
         }   
 
         stage('Build Docker Images') {
             steps {
                 echo "Building Flask and Next.js containers..."
+                sh 'cp .env .'
                 sh 'docker-compose build'
             }
         }
