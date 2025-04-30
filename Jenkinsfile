@@ -21,10 +21,8 @@ pipeline {
 
         stage('Inject .env') {
              steps {
-                withCredentials([file(credentialsId: 'antiphishenv', variable: 'FILE')]) {
-                    sh """
-                    echo "$ENV_FILE" > AntiPhishNextJS/.env
-                    """
+                withCredentials([file(credentialsId: 'antiphishenv', variable: 'ENV_FILE')]) {
+                    sh 'cp "$ENV_FILE" .env'
                 }
             }       
         }   
