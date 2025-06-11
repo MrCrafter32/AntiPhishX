@@ -42,27 +42,6 @@ AntiphishX is a comprehensive phishing detection system that uses **Natural Lang
 
 ---
 
-## Project Structure
-
-```
-antiphishx/
-│
-├── backend/               # NLP phishing detection backend
-│   ├── model/             # ML models and training scripts
-│   ├── app.py             # API server
-│   └── utils.py           # Text preprocessing utilities
-│
-├── frontend/              # Next.js frontend
-│   ├── pages/             # Application pages
-│   ├── components/        # React UI components
-│   └── styles/            # Tailwind CSS stylesheets
-│
-├── docker-compose.yml     # Docker-based deployment file
-└── README.md
-```
-
----
-
 ## Setup Instructions
 
 ### Prerequisites
