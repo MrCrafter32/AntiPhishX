@@ -9,7 +9,7 @@ AntiphishX is a comprehensive phishing detection system that uses **Natural Lang
 
 ### NLP-Powered Backend
 
-- Identifies emails as either phishing or legitimate using machine learning models.
+- Identifies emails as either phishing or legitimate using natural language processing models.
 - Includes preprocessing steps like:
   - Text normalization
   - Tokenization
@@ -25,8 +25,8 @@ AntiphishX is a comprehensive phishing detection system that uses **Natural Lang
 
 ### Model Capabilities
 
-- Supports models like Logistic Regression, Random Forest, and SVM.
-- Backend powered by Flask or FastAPI.
+- Supports BERT Model
+- Backend powered by Flask.
 - Easily upgradeable for future enhancements.
 
 ---
@@ -36,8 +36,8 @@ AntiphishX is a comprehensive phishing detection system that uses **Natural Lang
 | Layer        | Technology                             |
 | ------------ | ---------------------------------------- |
 | Frontend     | Next.js, React, Tailwind CSS            |
-| Backend      | Python, Scikit-learn, NLTK, Flask/FastAPI |
-| ML/NLP       | TF-IDF, Bag-of-Words, Scikit-learn      |
+| Backend      | Python, Scikit-learn, NLTK, Flask       |
+| ML/NLP       | TF-IDF, Scikit-learn                    |
 | Dev Tools    | Docker (optional), Git, VSCode          |
 
 ---
@@ -105,10 +105,11 @@ Ensure Docker is installed and running before using this option.
 
 ## How to Use
 
-- Enter the content of an email (subject and body) in the text input area.
+- First Create a account on the antiphishx page
+- Enter your IMAP Email Details.
+- Open a mail from the inbox dynamically fetch from your imap mail server
 - Click the "Analyze" button.
 - Review the model's prediction and confidence score.
-- Optional: View the model's explanation, if available.
 
 ---
 
@@ -143,9 +144,9 @@ Interested in contributing? We'd love your help!
 
 ## Author
 
-**Jagadeesh Chandra**  
+**Jagadeesh Chandra Duggirala**  
 Cybersecurity and Full-Stack Developer  
-[LinkedIn](https://www.linkedin.com/in/your-link/) • [GitHub](https://github.com/yourusername)
+[LinkedIn](https://www.linkedin.com/in/jagadeesh-chandra-8aa715251) • [GitHub](https://github.com/yourusername)
 
 ---
 
