@@ -56,7 +56,7 @@ AntiphishX is a comprehensive phishing detection system that uses **Natural Lang
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/antiphishx.git
+git clone https://github.com/MrCrafter32/antiphishx.git
 cd antiphishx
 ```
 
