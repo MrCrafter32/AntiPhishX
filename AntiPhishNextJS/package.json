@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "npx prisma generate && next build",
     "start": "next start -p 80",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.9.0",
@@ -52,4 +53,5 @@
     "tailwindcss": "^4",
     "tw-animate-css": "^1.2.8"
   }
+  
 }
