@@ -2,7 +2,6 @@
 
 <br/>
 
-<img src="https://placehold.co/600x300/dc2626/ffffff?text=AntiphishX&font=raleway" alt="AntiphishX Project Banner">
 
 # AntiphishX: NLP-Powered Phishing Detection
 
