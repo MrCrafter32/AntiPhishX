@@ -8,8 +8,7 @@ export async function GET(request) {
     const circumference = 2 * Math.PI * radius;
     const offset = circumference - (score / 100) * circumference;
   
-    // Always neutral color (example: muted blue-gray)
-    const strokeColor = "#64748b"; // Tailwind's slate-500 (#64748b)
+    const strokeColor = "#64748b";
   
     const svg = `
       <svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">

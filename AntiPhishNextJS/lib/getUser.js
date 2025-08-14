@@ -1,32 +1,33 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { auth } from "@clerk/nextjs/server";
 import prisma from "./prisma";
-import { ObjectId } from "mongodb";
-
 
 export async function getUserId() {
-    const session = await getServerSession(authOptions);
-    if (!session) {
-        return null;
-    }
-    return session.user.id;
+  const { userId: clerkId } = await auth();
+  return clerkId;
 }
 
-export async function getUserEmail() {
-    const session = await getServerSession(authOptions);
-    if (!session) {
-        return null;
-    }
-    return session.user.email;
-}
+export async function getUser() {
+  const { userId: clerkId } = await auth();
+  if (!clerkId) {
+    throw new Error("Unauthorized");
+  }
 
-export async function getUserType() {
-    const session = await getServerSession(authOptions);
-    const user = await prisma.UserIntegration.findUnique({
-        where: {
-            userId: new ObjectId(session.user.id),
-        },
+  const user = await prisma.user.findUnique({
+    where: { id: clerkId },
+    include: {
+      integration: true,
+    },
+  });
+
+  if (!user) {
+    const newUser = await prisma.user.create({
+      data: {
+        id: clerkId,
+        isFirstLogin: true,
+      },
     });
-    
-    return user.type;
+    return newUser;
+  }
+
+  return user;
 }

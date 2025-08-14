@@ -9,7 +9,7 @@ import {
 
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { useSession } from "next-auth/react";
+import { useUser } from "@clerk/nextjs";
 
 export default function IMAPEdit() {
     const [imapHost, setImapHost] = useState("");
@@ -19,8 +19,8 @@ export default function IMAPEdit() {
     const [useSSL, setUseSSL] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    const { data: session } = useSession();
-    const userId = session?.user?.id;
+    const { user } = useUser();
+    const userId = user?.id;
 
     useEffect(() => {
         const fetchIMAPSettings = async () => {
@@ -65,13 +65,12 @@ export default function IMAPEdit() {
             }
 
             const data = await response.json();
-            toast.success("IMAP settings updated successfully."); // Updated toast call
-            console.log('IMAP settings updated successfully:', data);
+            toast.success("IMAP settings updated successfully.");
             setTimeout(() => {
-                window.location.reload(); // Reload the page
-            }, 2000); // 2-second timeout
+                window.location.reload();
+            }, 2000);
         } catch (error) {
-            toast.error("Failed to update IMAP settings."); // Updated toast call
+            toast.error("Failed to update IMAP settings.");
             console.error('Error updating IMAP settings:', error);
         } finally {
             setIsLoading(false);

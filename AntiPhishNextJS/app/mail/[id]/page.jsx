@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { Home } from "lucide-react";
 import Link from "next/link";
 import ScoreMeter from "@/components/ScoreMeter";
+import { toast } from "sonner";
+import * as React from 'react'
 
 export default function Mail({ params }) {
     const [loading, setLoading] = useState(true);
@@ -20,12 +22,12 @@ export default function Mail({ params }) {
     const [from, setFrom] = useState("");
     const [to, setTo] = useState("");
 
-    const { id } = params; 
+    const { id } = React.use(params); 
 
     useEffect(() => {
         async function fetchMail() {
             try {
-                const response = await fetch(`/api/imap/fetch-mail?id=${id}`);
+                const response = await fetch(`/api/imap/fetch-mail/${id}`);
                 if (!response.ok) {
                     const errorData = await response.json();
                     throw new Error(errorData.error || "Failed to fetch mail");
@@ -89,9 +91,9 @@ export default function Mail({ params }) {
                 throw new Error(errData.error || "Failed to report false analysis");
             }
 
-            alert("False analysis reported successfully");
+            toast.success("False analysis reported successfully");
         } catch (err) {
-            alert("Failed to report false analysis: " + err.message);
+            toast.error("Failed to report false analysis: " + err.message);
         }
     }
 
@@ -113,7 +115,6 @@ export default function Mail({ params }) {
 
     return (
         <div className="flex h-screen bg-gradient-to-br from-black via-[#1a1a1a] to-[#0f0f0f] text-white overflow-hidden font-sans">
-            {/* Sidebar & Content */}
             <div className="flex-1 flex flex-col p-6">
                 <div className="flex items-center mb-4">
                     <Link href="/" className="mr-4 text-white hover:text-gray-300">
@@ -123,7 +124,6 @@ export default function Mail({ params }) {
                 </div>
 
                 <div className="flex-1 rounded-2xl p-6 backdrop-blur-md bg-white/5 shadow-md border border-white/10 overflow-auto">
-                    {/* 🛠️ Now dynamic subject, from, and to */}
                     <h2 className="text-lg texy-gray-300 font-bold mb-2">Subject: {subject}</h2>
                     <p className="text-sm text-gray-300 mb-1">
                         <strong>From:</strong> {from}
@@ -136,7 +136,6 @@ export default function Mail({ params }) {
                 </div>
             </div>
 
-            {/* Prediction Panel */}
             <div className="w-80 bg-white/5 backdrop-blur-md border-l border-white/10 shadow-md flex flex-col items-center justify-center p-6 rounded-l-2xl">
                 <h2 className="text-xl font-semibold text-white mb-4">Phishing Analysis</h2>
 

@@ -1,18 +1,38 @@
 import { NextResponse } from "next/server";
-import { getIntegrationDetails } from "@/lib/imap";
+import prisma from "@/lib/prisma";
 
-export async function GET(req, { params }) {
-  const { userId } = await params;
-
-  if (!userId) {
-    return NextResponse.json({ error: "User ID is required" }, { status: 400 });
-  }
-
+export async function GET(request, { params }) {
   try {
-    const details = await getIntegrationDetails(userId);
-    return NextResponse.json(details);
+    const { userId: clerkId } = await params;
+    
+    if (!clerkId) {
+      return NextResponse.json({
+        error: "User ID is required",
+        code: "MISSING_USER_ID",
+        details: "User ID parameter is missing from request"
+      }, { status: 400 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { clerkId },
+      select: { isFirstLogin: true },
+    });
+
+    if (!user) {
+      return NextResponse.json({
+        error: "User not found",
+        code: "USER_NOT_FOUND",
+        details: "User record does not exist in database"
+      }, { status: 404 });
+    }
+
+    return NextResponse.json({ isFirstLogin: user.isFirstLogin });
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Failed to fetch IMAP details" }, { status: 500 });
+    console.error("Error fetching user:", error);
+    return NextResponse.json({
+      error: "Internal server error",
+      code: "FETCH_USER_ERROR",
+      details: error.message
+    }, { status: 500 });
   }
 }

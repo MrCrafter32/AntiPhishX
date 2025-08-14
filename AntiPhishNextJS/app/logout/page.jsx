@@ -1,20 +1,20 @@
 "use client";
 
 import { useEffect } from "react";
-import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useClerk } from "@clerk/nextjs";
 
 export default function LogoutPage() {
   const router = useRouter();
+  const { signOut } = useClerk();
 
   useEffect(() => {
-    const timer = setTimeout(async () => {
-      await signOut({ redirect: false }); // don't redirect immediately
-      router.push("/login"); // manually send to login page
-    }, 2000); // 2 seconds delay for animation
+    const timer = setTimeout(() => {
+      signOut({ redirectUrl: '/' });
+    }, 1000);
 
-    return () => clearTimeout(timer);
-  }, [router]);
+    return () => clearTimeout(timer); 
+  }, [router, signOut]);
 
   return (
     <div className="h-screen flex items-center justify-center bg-[#1a1a1a] text-white">

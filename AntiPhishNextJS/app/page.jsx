@@ -1,77 +1,87 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import InboxTable from "@/components/InboxTable";
+import { redirect } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
+import { NextRequest } from "next/server";
+import { UserButton } from "@clerk/nextjs";
 
 export default function DashboardPage() {
-  const { data: session, status } = useSession();
-  const [mails, setMails] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [mails, setMails] = useState([]);
+  const [isFirstLogin, setIsFirstLogin] = useState(false);
+  const [error, setError] = useState(null);
+  const router = useRouter();
 
   useEffect(() => {
-    const fetchMails = async () => {
-      if (!session?.user?.email) return;
-
+    const checkImapSetup = async () => {
       try {
-        setLoading(true);
-
-        const userId = session.user.id;
-
-        const response = await fetch(
-          `/api/imap/fetch-inbox?sessionId=${userId}`,
-          {
-              method: 'GET',
-              headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${userId}`,
-              },
-          }
-      );
-
-        const data = await response.json();
-        setMails(data);
+        const res = await fetch("/api/setup/imap");
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.error || "Failed to fetch IMAP setup");
+        }
+        const data = await res.json();
+        setIsFirstLogin(data.isFirstLogin.isFirstLogin);
       } catch (error) {
-        console.error("Error fetching mails:", error);
+        console.error("Error checking IMAP setup:", error);
+        setError(error.message);
       } finally {
         setLoading(false);
       }
     };
+    checkImapSetup();
+  }, []);
 
-    if (status === "authenticated") {
-      fetchMails();
+  useEffect(() => {
+    if (!loading && !isFirstLogin) {
+      fetch("/api/imap/fetch-inbox")
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Failed to fetch inbox");
+          }
+          return response.json();
+        })
+        .then(data => {
+          setMails(data);
+        })
+        .catch(error => {
+          console.error("Error fetching emails:", error);
+          setError(error.message);
+        });
     }
-  }, [session, status]); // depend on session and status
+  }, [loading, isFirstLogin]);
 
-  if (status === "loading") {
-    return (
-      <div className="h-screen flex justify-center items-center bg-[#0f0f0f]">
-        <div className="animate-pulse text-white text-2xl font-bold">
-          Authenticating...
-        </div>
-      </div>
-    );
+  if (isFirstLogin) {
+    redirect("/setup");
   }
 
-  if (!session) {
+  if (error) {
     return (
-      <div className="h-screen flex justify-center items-center bg-[#0f0f0f] text-white">
-        You must be signed in.
+      <div className="h-screen flex items-center justify-center bg-gradient-to-br from-black via-[#1a1a1a] to-[#0f0f0f] text-white">
+        <div className="text-center">
+          <p className="text-red-400 text-lg mb-4">Error: {error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg"
+          >
+            Retry
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-black via-[#1a1a1a] to-[#0f0f0f] text-white overflow-hidden">
-      {/* Header */}
-      <div className="h-16 flex items-center px-6 border-b border-gray-800 bg-[#1a1a1a]/60 backdrop-blur-md shadow-md flex-shrink-0">
+      <div className="h-16 flex items-center justify-between px-6 border-b border-gray-800 bg-[#1a1a1a]/60 backdrop-blur-md shadow-md flex-shrink-0">
         <h1 className="text-2xl font-bold">Inbox</h1>
+        <UserButton />
       </div>
 
-      {/* Main */}
       <div className="flex flex-1 overflow-hidden relative p-2 gap-2">
-        {/* Left */}
         <div className="flex-1 overflow-y-auto">
           <div className="h-full rounded-2xl p-4 backdrop-blur-md bg-white/5 shadow-md border border-white/10">
             {loading ? (
@@ -82,11 +92,6 @@ export default function DashboardPage() {
               <InboxTable mails={mails} />
             )}
           </div>
-        </div>
-
-        {/* Sidebar */}
-        <div className="w-1/4 flex flex-col">
-          <Sidebar email={session.user.email} />
         </div>
       </div>
     </div>

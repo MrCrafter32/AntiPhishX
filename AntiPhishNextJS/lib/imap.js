@@ -1,20 +1,17 @@
 import prisma from "./prisma";
 
-export async function getIntegrationDetails(userId) {
-    // console.log("Fetching integration details for user ID:", userId);
-
-
-    const IntegrationDetails = await prisma.userIntegration.findUnique({
+export async function getIntegrationDetails(clerkId) {
+    const details = await prisma.userIntegration.findUnique({
         where: {
-            userId: userId,
+            userId: clerkId,
         },
     }); 
 
-    return IntegrationDetails;
+    return details;
 }
 
-export async function connectToIMAP() {
-    const integrationDetails = await getIntegrationDetails();
+export async function connectToIMAP(clerkId) {
+    const integrationDetails = await getIntegrationDetails(clerkId);
 
     const client = new ImapFlow({
                     host: integrationDetails.imapHost,
@@ -26,5 +23,4 @@ export async function connectToIMAP() {
                     }
                 });
     return client;
-    
 }

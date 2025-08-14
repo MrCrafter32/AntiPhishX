@@ -39,7 +39,6 @@ export default function InboxTable({ mails }) {
   );
 }
 
-// helper function to clean up date
 function formatDate(dateString) {
   if (!dateString) return "";
   const date = new Date(dateString);

@@ -11,7 +11,6 @@ export function GET(req) {
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    console.log(decoded);
     return new Response('Hello', {status:200})
   } catch (err) {
     return new Response('Invalid token', { status: 401 });

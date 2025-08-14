@@ -28,7 +28,7 @@ export default function ScoreMeter({ score, label }) {
                         cx="50%"
                         cy="50%"
                         r={radius}
-                        stroke="rgba(255, 255, 255, 0.1)" // Light transparent white for background circle
+                        stroke="rgba(255, 255, 255, 0.1)"
                         strokeWidth={stroke}
                         fill="transparent"
                     />
@@ -36,7 +36,7 @@ export default function ScoreMeter({ score, label }) {
                         cx="50%"
                         cy="50%"
                         r={radius}
-                        stroke="#10B981" // Bright teal (like a success green)
+                        stroke="#10B981"
                         strokeWidth={stroke}
                         fill="transparent"
                         strokeLinecap="round"
@@ -46,7 +46,6 @@ export default function ScoreMeter({ score, label }) {
                     />
                 </svg>
 
-                {/* Centered Score */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                     <span className="text-2xl font-bold text-white">
                         {pred_score}%

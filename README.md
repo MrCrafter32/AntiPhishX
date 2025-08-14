@@ -1,163 +1,160 @@
+<div align="center">
 
-# AntiphishX – Email Phishing Detection Tool
+<br/>
 
-AntiphishX is a comprehensive phishing detection system that uses **Natural Language Processing (NLP)** on the backend and a modern **Next.js** interface on the frontend to analyze and visualize email threats. Designed for both technical users and cybersecurity teams, AntiphishX helps identify potentially malicious emails with accuracy and clarity.
+<img src="https://placehold.co/600x300/dc2626/ffffff?text=AntiphishX&font=raleway" alt="AntiphishX Project Banner">
 
----
+# AntiphishX: NLP-Powered Phishing Detection
 
-## Features
+**A full-stack cybersecurity tool that leverages Natural Language Processing (NLP) to detect email phishing threats with high accuracy. This project showcases a sophisticated backend model served via a Flask API and integrated with a modern, reactive Next.js frontend.**
 
-### NLP-Powered Backend
+[![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
+[![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+[![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
 
-- Identifies emails as either phishing or legitimate using natural language processing models.
-- Includes preprocessing steps like:
-  - Text normalization
-  - Tokenization
-  - TF-IDF or word embedding generation
-- Trained with realistic phishing datasets.
-- Provides API endpoints for phishing prediction.
-
-### Modern Next.js Frontend
-
-- User-friendly interface for entering email content.
-- Displays prediction results with confidence levels.
-- Visual indicators and performance summaries.
-
-### Model Capabilities
-
-- Supports BERT Model
-- Backend powered by Flask.
-- Easily upgradeable for future enhancements.
+</div>
 
 ---
 
-## Tech Stack
+## ✨ Core Features
 
-| Layer        | Technology                             |
-| ------------ | ---------------------------------------- |
-| Frontend     | Next.js, React, Tailwind CSS            |
-| Backend      | Python, Scikit-learn, NLTK, Flask       |
-| ML/NLP       | TF-IDF, Scikit-learn                    |
-| Dev Tools    | Docker (optional), Git, VSCode          |
+AntiphishX is more than just a script; it's an end-to-end system demonstrating practical application of machine learning in cybersecurity.
 
----
-
-## Setup Instructions
-
-### Prerequisites
-
-- Node.js v18 or newer
-- Python 3.8 or newer
-- pip, pipenv, or poetry
-- Git
+-   **🧠 Intelligent NLP Backend:** Utilizes a fine-tuned NLP model (supporting BERT) to analyze email content and accurately classify it as "Phishing" or "Legitimate." The backend handles complex preprocessing, including text normalization, tokenization, and vectorization (TF-IDF).
+-   **🖥️ Interactive Frontend:** A sleek and responsive user interface built with Next.js allows users to paste email content for instant analysis. Results are displayed with clear visual indicators and confidence scores.
+-   **📧 Dynamic Email Analysis:** Integrates directly with IMAP servers to fetch and analyze emails from a user's inbox in real-time, providing a practical, real-world use case.
+-   **🚀 Scalable API:** The Flask backend exposes a robust API, making the NLP model's prediction capabilities available to any client application.
+-   **📦 Containerized Deployment:** Fully configured with Docker and Docker Compose, allowing for one-command setup of the entire application stack (frontend, backend, and networking).
 
 ---
 
-### 1. Clone the Repository
+## 🛠️ Tech Stack & Architecture
+
+This project combines a powerful Python backend with a modern JavaScript frontend.
+
+| Layer | Technology |
+| :--- | :--- |
+| **Frontend** | Next.js, React, Tailwind CSS |
+| **Backend** | Python, Flask, Scikit-learn, NLTK |
+| **ML/NLP** | BERT, TF-IDF, Hugging Face Transformers |
+| **DevOps** | Docker, Docker Compose, Git |
+
+---
+
+## 🚀 Getting Started & Self-Hosting
+
+You can run your own instance of AntiphishX locally. Follow the Docker method for the quickest setup.
+
+### 1. Prerequisites
+
+-   Git
+-   Node.js (v18 or later)
+-   Python (3.8 or later) & Pip
+-   Docker & Docker Compose (Recommended)
+
+### 2. Clone the Repository
 
 ```bash
-git clone https://github.com/MrCrafter32/antiphishx.git
+git clone [https://github.com/MrCrafter32/antiphishx.git](https://github.com/MrCrafter32/antiphishx.git)
 cd antiphishx
 ```
 
----
+### 3. Environment Configuration
 
-### 2. Run the Backend (Python)
+Before running the application, you need to set up your environment variables for the frontend.
 
-```bash
-cd backend
-pip install -r requirements.txt
-python app.py
+**Step 1: Create the `.env` file**
+
+Navigate to the frontend directory (`AntiPhishNextJS`) and create a new file named `.env`.
+
+**Step 2: Add Your Credentials**
+
+Add the following variables to your `.env` file. These are necessary for database connections and user authentication.
+
+```env
+# Database Connection (for Prisma)
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE"
+
+# Clerk Authentication
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_...
+CLERK_SECRET_KEY=sk_...
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/
 ```
 
-The backend server will start at `http://localhost:5000` (or `8000` with FastAPI).
+### 4. Deployment Method 1: Docker (Recommended)
 
----
+This is the simplest way to get the entire application running.
 
-### 3. Run the Frontend (Next.js)
+**Step 1: Build and Run the Containers**
 
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-You can now access the frontend at `http://localhost:3000`.
-
----
-
-### Alternative: Use Docker Compose
-
-To simplify setup, you can run the entire application stack using Docker Compose:
+From the project's root directory, execute:
 
 ```bash
 docker-compose up --build
 ```
 
-This launches both the frontend and backend services together:
+**Step 2: Access the Application**
 
-- Frontend: `http://localhost:80`
-- Backend API: `http://localhost:5000`
+-   **Frontend:** `http://localhost:3000`
+-   **Backend API:** `http://localhost:5000`
 
-Ensure Docker is installed and running before using this option.
+### 5. Deployment Method 2: Manual Setup
 
----
+**Step 1: Run the Backend Server**
 
-## How to Use
+```bash
+cd NLP
+pip install -r requirements.txt
+python app.py
+```
+*The backend will be available at `http://localhost:5000`.*
 
-- First Create a account on the antiphishx page
-- Enter your IMAP Email Details.
-- Open a mail from the inbox dynamically fetch from your imap mail server
-- Click the "Analyze" button.
-- Review the model's prediction and confidence score.
+**Step 2: Run the Frontend Application**
 
----
-
-## Datasets Used
-
-- https://phishtank.org/
-- https://www.cs.cmu.edu/~enron/
-- Additional labeled examples from online sources
-
----
-
-## Planned Enhancements
-
-- Secure login and user management
-- Integration with Gmail or Outlook APIs
-- Support for explainable AI (XAI) features
-- Browser plugin for real-time phishing detection
+In a separate terminal:
+```bash
+cd AntiPhishNextJS
+npm install
+npm run dev
+```
+*The frontend will be available at `http://localhost:3000`.*
 
 ---
 
-## Contributing
+## 📖 How to Use
 
-Interested in contributing? We'd love your help!
-
-1. Fork the repository
-2. Create a new branch (`git checkout -b feature/your-feature`)
-3. Make your changes and commit (`git commit -m 'Add feature'`)
-4. Push your branch (`git push origin feature/your-feature`)
-5. Submit a pull request
+1.  Navigate to the AntiphishX web interface.
+2.  Create an account and log in.
+3.  Connect your email by providing your IMAP server details.
+4.  Select any email from your dynamically fetched inbox.
+5.  The system will automatically analyze the content and display a prediction: **Phishing** or **Legitimate**, along with a confidence score.
 
 ---
 
-## Author
+## 💡 Future Enhancements
 
-**Jagadeesh Chandra Duggirala**  
-Cybersecurity and Full-Stack Developer  
-[LinkedIn](https://www.linkedin.com/in/jagadeesh-chandra-8aa715251) • [GitHub](https://github.com/yourusername)
+This project has a clear roadmap for future development:
 
----
-
-## License
-
-This project is open-sourced under the MIT License. See the `LICENSE` file for more details.
+-   **Direct API Integration:** Add support for Outlook APIs for easier and more secure connections.
+-   **Explainable AI (XAI):** Implement features to highlight which specific words or phrases in an email contributed most to the phishing classification.
+-   **Browser Extension:** Develop a plugin for Chrome/Firefox to analyze emails in real-time directly within the user's webmail client.
 
 ---
 
-## Acknowledgments
+<div align="center">
 
-- Scikit-learn and NLTK for machine learning support
-- Open phishing dataset providers
-- The Next.js and React development communities
+### 👋 Let's Connect!
+
+**Jagadeesh Chandra Duggirala**
+<br/>
+Cybersecurity and Full-Stack Developer
+
+*I'm actively seeking new opportunities and would love to discuss how my skills in AI and web development can bring value to your team. Feel free to reach out!*
+
+[**LinkedIn**](https://www.linkedin.com/in/jagadeesh-chandra-8aa715251) | [**GitHub**](https://github.com/MrCrafter32)
+
+</div>

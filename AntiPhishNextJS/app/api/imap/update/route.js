@@ -1,43 +1,58 @@
+import { auth } from "@clerk/nextjs/server";
 import prisma from "@/lib/prisma";
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
-import { ObjectId } from "mongodb";
+export async function PUT(req) {
+  const { userId: clerkId } = await auth();
+  if (!clerkId) {
+    return new Response(JSON.stringify({
+      error: "Unauthorized",
+      code: "UNAUTHORIZED",
+      details: "User authentication required"
+    }), { status: 401 });
+  }
 
-export async function POST(request) {
-    const session = await getServerSession(authOptions);
+  try {
+    const body = await req.json();
+    const { imapHost, imapPort, imapSSL, imapEmail, imapPassword } = body;
 
-    if (!session || !session.user?.id) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!imapHost || !imapPort || imapSSL === undefined || !imapEmail || !imapPassword) {
+      return new Response(JSON.stringify({
+        error: "Missing IMAP fields",
+        code: "MISSING_IMAP_FIELDS",
+        details: "All IMAP configuration fields are required: host, port, SSL, email, password"
+      }), { status: 400 });
     }
 
-    const userId = session.user.id;
-    const { imapHost, imapPort, imapSSL, imapEmail, imapPassword } = await request.json();
+    const user = await prisma.user.findUnique({
+      where: { clerkId },
+      select: { id: true }
+    });
 
-    try {
-        const integrationDetails = await prisma.userIntegration.findUnique({
-            where: { userId: new ObjectId(userId) },
-        });
-
-        if (!integrationDetails) {
-            return NextResponse.json({ error: "IMAP integration not found" }, { status: 404 });
-        }
-
-        await prisma.userIntegration.update({
-            where: { userId: new ObjectId(userId) },
-            data: {
-                imapHost,
-                imapPort: parseInt(imapPort, 10), // Convert imapPort to an integer
-                imapSSL,
-                imapEmail,
-                imapPassword,
-            },
-        });
-
-        return NextResponse.json({ message: "IMAP settings updated successfully" }, { status: 200 });
-    } catch (error) {
-        console.error("Error updating IMAP settings:", error);
-        return NextResponse.json({ error: "Failed to update IMAP settings" }, { status: 500 });
+    if (!user) {
+      return new Response(JSON.stringify({
+        error: "User not found",
+        code: "USER_NOT_FOUND",
+        details: "User record does not exist in database"
+      }), { status: 404 });
     }
+
+    await prisma.userIntegration.update({
+      where: { userId: user.id },
+      data: { imapHost, imapPort, imapSSL, imapEmail, imapPassword }
+    });
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { isFirstLogin: false }
+    });
+
+    return new Response(JSON.stringify({ success: true }), { status: 200 });
+  } catch (error) {
+    console.error("PUT /imap/update error:", error);
+    return new Response(JSON.stringify({
+      error: "Internal Server Error",
+      code: "IMAP_UPDATE_ERROR",
+      details: error.message
+    }), { status: 500 });
+  }
 }
