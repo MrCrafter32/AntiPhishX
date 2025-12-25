@@ -128,7 +128,7 @@ export default function Mail({ params }) {
                 </div>
 
                 <div className="flex-1 rounded-2xl p-6 backdrop-blur-md bg-white/5 shadow-md border border-white/10 overflow-auto">
-                    <h2 className="text-lg texy-gray-300 font-bold mb-2">Subject: {subject}</h2>
+                    <h2 className="text-lg text-gray-300 font-bold mb-2">Subject: {subject}</h2>
                     <p className="text-sm text-gray-300 mb-1">
                         <strong>From:</strong> {from}
                     </p>
