@@ -40,7 +40,7 @@ export async function GET(request, { params }) {
             }, { status: 400 });
         }
 
-        const { id } = await params;
+        const { id } = params;
         const mailId = id;
 
         if (!mailId) {
@@ -124,33 +124,40 @@ export async function GET(request, { params }) {
                 });
 
                 await client.connect();
-                await client.getMailboxLock("INBOX");
+                let lock;
+                try {
+                    lock = await client.getMailboxLock("INBOX");
 
-                const message = await client.fetchOne(mailId, {
-                    uid: true,
-                    envelope: true,
-                    source: true,
-                    bodyStructure: true,
-                }, { uid: true });
-                
+                    const message = await client.fetchOne(mailId, {
+                        uid: true,
+                        envelope: true,
+                        source: true,
+                        bodyStructure: true,
+                    }, { uid: true });
+                    
 
-                if (!message?.source) {
-                    throw new Error("Message source not found");
+                    if (!message?.source) {
+                        throw new Error("Message source not found");
+                    }
+
+                    const parsed = await simpleParser(message.source);
+
+                    const mailDetails = {
+                        id: mailId,
+                        subject: parsed.subject || "No subject",
+                        from: parsed.from?.text || "Unknown sender",
+                        date: parsed.date?.toISOString() || "Unknown date",
+                        htmlBody: parsed.html || "No HTML content available",
+                        textBody: parsed.text || "No text content available",
+                    };
+
+                    return NextResponse.json(mailDetails, { status: 200 });
+                } finally {
+                    if (lock) {
+                        lock.release();
+                    }
+                    await client.logout();
                 }
-
-                const parsed = await simpleParser(message.source);
-
-                const mailDetails = {
-                    id: mailId,
-                    subject: parsed.subject || "No subject",
-                    from: parsed.from?.text || "Unknown sender",
-                    date: parsed.date?.toISOString() || "Unknown date",
-                    htmlBody: parsed.html || "No HTML content available",
-                    textBody: parsed.text || "No text content available",
-                };
-
-                await client.logout();
-                return NextResponse.json(mailDetails, { status: 200 });
             } catch (error) {
                 console.error("Error fetching mail via IMAP:", error);
                 return NextResponse.json({

@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Home } from "lucide-react";
 import Link from "next/link";
 import ScoreMeter from "@/components/ScoreMeter";
 import { toast } from "sonner";
-import * as React from 'react'
+import DOMPurify from "dompurify";
 
 export default function Mail({ params }) {
     const [loading, setLoading] = useState(true);
@@ -22,7 +22,11 @@ export default function Mail({ params }) {
     const [from, setFrom] = useState("");
     const [to, setTo] = useState("");
 
-    const { id } = React.use(params); 
+    const { id } = params; 
+    const sanitizedHtml = useMemo(
+        () => DOMPurify.sanitize(htmlBody || ""),
+        [htmlBody]
+    );
 
     useEffect(() => {
         async function fetchMail() {
@@ -131,8 +135,11 @@ export default function Mail({ params }) {
                     <p className="text-sm text-gray-300 mb-4">
                         <strong>To:</strong> {to}
                     </p>
-                    <h3 className="text-md text-gray-300 font-semibold mb-2">Body:</h3>
-                    <div className="text-sm text-gray-200" dangerouslySetInnerHTML={{ __html: String(htmlBody) }} />
+                     <h3 className="text-md text-gray-300 font-semibold mb-2">Body:</h3>
+                     <div
+                         className="text-sm text-gray-200"
+                         dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
+                     />
                 </div>
             </div>
 
