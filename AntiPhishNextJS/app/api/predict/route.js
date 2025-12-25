@@ -13,7 +13,7 @@ export async function POST(req) {
             });
         }
 
-        const response = await fetch("http://antiphishnlp.mrcrafter.tech:5000/predict", {
+        const response = await fetch("https://MrCrafter32-AntiPhishNLP.hf.space/predict", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
