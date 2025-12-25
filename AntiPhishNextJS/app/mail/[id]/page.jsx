@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Home } from "lucide-react";
 import Link from "next/link";
 import ScoreMeter from "@/components/ScoreMeter";
 import { toast } from "sonner";
-import * as React from 'react'
+import DOMPurify from "dompurify";
 
 export default function Mail({ params }) {
     const [loading, setLoading] = useState(true);
@@ -22,7 +22,16 @@ export default function Mail({ params }) {
     const [from, setFrom] = useState("");
     const [to, setTo] = useState("");
 
-    const { id } = React.use(params); 
+    const { id } = params; 
+    const sanitizedHtml = useMemo(
+        () => DOMPurify.sanitize(htmlBody || ""),
+        [htmlBody]
+    );
+    const meta = [
+        { label: "Subject", value: subject || "No subject" },
+        { label: "From", value: from || "Unknown sender" },
+        { label: "To", value: to || "Unknown recipient" },
+    ];
 
     useEffect(() => {
         async function fetchMail() {
@@ -123,21 +132,41 @@ export default function Mail({ params }) {
                     <h1 className="text-2xl text-white font-bold">Email Analysis</h1>
                 </div>
 
-                <div className="flex-1 rounded-2xl p-6 backdrop-blur-md bg-white/5 shadow-md border border-white/10 overflow-auto">
-                    <h2 className="text-lg texy-gray-300 font-bold mb-2">Subject: {subject}</h2>
-                    <p className="text-sm text-gray-300 mb-1">
-                        <strong>From:</strong> {from}
-                    </p>
-                    <p className="text-sm text-gray-300 mb-4">
-                        <strong>To:</strong> {to}
-                    </p>
-                    <h3 className="text-md text-gray-300 font-semibold mb-2">Body:</h3>
-                    <div className="text-sm text-gray-200" dangerouslySetInnerHTML={{ __html: String(htmlBody) }} />
+                <div className="flex-1 rounded-2xl p-6 backdrop-blur-md bg-white/5 shadow-md border border-white/10 overflow-auto space-y-4">
+                    <div className="grid gap-3 md:grid-cols-3">
+                        {meta.map((item) => (
+                            <div key={item.label} className="p-3 rounded-xl bg-white/5 border border-white/10">
+                                <p className="text-xs uppercase tracking-wide text-gray-400">{item.label}</p>
+                                <p className="text-sm text-white mt-1 break-words">{item.value}</p>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="grid gap-4 lg:grid-cols-2">
+                        <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+                            <h3 className="text-md text-gray-300 font-semibold mb-2">HTML Body</h3>
+                            <div
+                                className="text-sm text-gray-200 prose prose-invert max-w-none"
+                                dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
+                            />
+                        </div>
+                        <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+                            <div className="flex items-center justify-between mb-2">
+                                <h3 className="text-md text-gray-300 font-semibold">Plain Text</h3>
+                                <span className="text-[10px] px-2 py-1 rounded-full bg-white/10 text-gray-300">
+                                    Read-only
+                                </span>
+                            </div>
+                            <pre className="text-sm text-gray-200 whitespace-pre-wrap leading-relaxed bg-black/30 rounded-lg p-3 border border-white/5 h-[320px] overflow-y-auto">
+                                {plainBody || "No text content available"}
+                            </pre>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div className="w-80 bg-white/5 backdrop-blur-md border-l border-white/10 shadow-md flex flex-col items-center justify-center p-6 rounded-l-2xl">
-                <h2 className="text-xl font-semibold text-white mb-4">Phishing Analysis</h2>
+            <div className="w-80 bg-white/5 backdrop-blur-md border-l border-white/10 shadow-md flex flex-col items-center justify-center p-6 rounded-l-2xl space-y-3">
+                <h2 className="text-xl font-semibold text-white">Phishing Analysis</h2>
 
                 {predictLoading ? (
                     <p className="text-gray-400 text-sm">Analyzing...</p>
@@ -152,15 +181,17 @@ export default function Mail({ params }) {
                     </>
                 )}
 
-                {analysisTime && (
-                    <p className="text-sm text-gray-400 mt-2">
-                        Email analyzed in {analysisTime} sec
-                    </p>
-                )}
+                <div className="text-xs text-gray-400">
+                    {analysisTime ? (
+                        <>Email analyzed in {analysisTime} sec</>
+                    ) : (
+                        <>Not analyzed yet</>
+                    )}
+                </div>
 
                 <button
                     onClick={handleReanalyze}
-                    className="mt-4 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg shadow-md"
+                    className="mt-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-lg shadow-md w-full transition-colors"
                 >
                     {isAnalyzed ? "Reanalyze" : "Analyze"}
                 </button>
@@ -168,7 +199,7 @@ export default function Mail({ params }) {
                 {isAnalyzed && score !== null && (
                     <button
                         onClick={handleReportFalseAnalysis}
-                        className="mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-md"
+                        className="mt-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-md w-full transition-colors"
                     >
                         Report False Analysis
                     </button>
